@@ -1,8 +1,11 @@
 package com.bezkoder.spring.files.upload.db.controller;
+import com.bezkoder.spring.files.upload.db.model.FileResponse;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,9 +36,9 @@ public class FileController {
           @RequestParam("file") MultipartFile file) {
     String message;
     try {
-      storageService.store(file, sender, receiver);
-      message = "Uploaded the file successfully: " + file.getOriginalFilename();
-      return ResponseEntity.status(200).body(new ResponseMessage(message));
+      FileDB savedFile = storageService.store(file, sender, receiver);  // Store the file
+      message = "Uploaded the file successfully: " + savedFile.getName();  // Send back the file name
+      return ResponseEntity.ok(new ResponseMessage(message));
     } catch (IOException e) {
       message = "Could not upload the file: " + file.getOriginalFilename() + "!";
       return ResponseEntity.status(417).body(new ResponseMessage(message));
@@ -62,7 +65,7 @@ public class FileController {
       );
     }).collect(Collectors.toList());
 
-    return ResponseEntity.status(200).body(responseFiles);
+    return ResponseEntity.ok(responseFiles);
   }
 
   // List all files received by a specific user
@@ -85,7 +88,7 @@ public class FileController {
       );
     }).collect(Collectors.toList());
 
-    return ResponseEntity.status(200).body(responseFiles);
+    return ResponseEntity.ok(responseFiles);
   }
 
   // Download a specific file by its ID
@@ -120,9 +123,9 @@ public class FileController {
           @RequestParam("file") MultipartFile file) {
     String message;
     try {
-      storageService.storeForGroup(file, groupName);
-      message = "Uploaded the file successfully to group: " + groupName;
-      return ResponseEntity.status(200).body(new ResponseMessage(message));
+      FileResponse savedFile = storageService.storeForGroup(file, groupName);  // Adjusted type
+      message = "Uploaded the file successfully, name : " + savedFile.getFileName();  // Use appropriate getter
+      return ResponseEntity.ok(new ResponseMessage(message));
     } catch (IOException e) {
       message = "Could not upload the file to group: " + groupName;
       return ResponseEntity.status(417).body(new ResponseMessage(message));
@@ -145,10 +148,11 @@ public class FileController {
               dbFile.getName(),
               fileDownloadUri,
               dbFile.getType(),
-              dbFile.getData().length);
+              dbFile.getData().length
+      );
     }).collect(Collectors.toList());
 
-    return ResponseEntity.status(200).body(responseFiles);
+    return ResponseEntity.ok(responseFiles);
   }
 
   // Download a specific file from a group by its name

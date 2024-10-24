@@ -1,7 +1,9 @@
 package com.bezkoder.spring.files.upload.db.service;
+import com.bezkoder.spring.files.upload.db.model.FileResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -28,18 +30,21 @@ public class FileStorageService {
    * @return The saved FileDB entity.
    * @throws IOException If an I/O error occurs.
    */
-  public FileDB store(MultipartFile file, String sender, String receiver) throws IOException {
-    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
-    // Check for invalid characters in the file name
+
+  public FileDB store(MultipartFile file, String sender, String receiver) throws IOException {
+    String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
     if (fileName.contains("..")) {
       throw new IOException("Invalid path sequence in file name: " + fileName);
     }
 
+    // Use the individual sharing constructor correctly
     FileDB fileDB = new FileDB(fileName, file.getContentType(), file.getBytes(), sender, receiver);
 
     return fileDBRepository.save(fileDB);
   }
+
 
   /**
    * Retrieves a file based on its ID.
@@ -95,11 +100,18 @@ public class FileStorageService {
     return fileDBRepository.findAll().stream();
   }
 
-  public FileDB storeForGroup(MultipartFile file, String groupName) throws IOException {
-    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-    FileDB fileDB = new FileDB(fileName, file.getContentType(), file.getBytes(), null, null, groupName);
+  public FileResponse storeForGroup(MultipartFile file, String groupName) throws IOException {
+    String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
-    return fileDBRepository.save(fileDB);
+    if (fileName.contains("..")) {
+      throw new IOException("Invalid path sequence in file name: " + fileName);
+    }
+
+    FileDB fileDB = new FileDB(fileName, file.getContentType(), file.getBytes(), groupName);
+    FileDB savedFile = fileDBRepository.save(fileDB);
+
+    // Return the response with relevant information
+    return new FileResponse(savedFile.getId(), savedFile.getName(), savedFile.getType(), savedFile.getGroupName());
   }
 
 

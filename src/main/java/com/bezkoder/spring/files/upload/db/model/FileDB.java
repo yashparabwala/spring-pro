@@ -32,26 +32,30 @@ public class FileDB {
   public FileDB() {
   }
 
-//  public FileDB(String name, String type, byte[] data, String sender, String receiver, String groupName) {
-//    this.name = name;
-//    this.type = type;
-//    this.data = data;
-//    this.sender = sender;
-//    this.receiver = receiver;
-//    this.groupName = groupName;
-//  }
-
-  public FileDB(String fileName, String contentType, byte[] bytes, String sender, String receiver, String groupName) {
-    this.name = fileName;
-    this.type = contentType;
-    this.data = bytes;
+  public FileDB(String name, String type, byte[] data, String sender, String receiver) {
+    this.name = name;
+    this.type = type;
+    this.data = data;
     this.sender = sender;
     this.receiver = receiver;
+    this.groupName = null;
+  }
+
+  // Constructor for group sharing
+  public FileDB(String name, String type, byte[] data, String groupName) {
+    this.name = name;
+    this.type = type;
+    this.data = data;
+    this.sender = null;
+    this.receiver = null;
     this.groupName = groupName;
   }
 
+
 //  public FileDB(String fileName, String contentType, byte[] bytes, String sender, String receiver) {
 //  }
+
+
 
   // Getters and Setters
 
