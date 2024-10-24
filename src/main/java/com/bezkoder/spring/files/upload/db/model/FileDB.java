@@ -41,12 +41,13 @@ public class FileDB {
 //    this.groupName = groupName;
 //  }
 
-  public FileDB(String fileName, String contentType, byte[] bytes, String sender, String receiver) {
+  public FileDB(String fileName, String contentType, byte[] bytes, String sender, String receiver, String groupName) {
     this.name = fileName;
     this.type = contentType;
     this.data = bytes;
     this.sender = sender;
     this.receiver = receiver;
+    this.groupName = groupName;
   }
 
 //  public FileDB(String fileName, String contentType, byte[] bytes, String sender, String receiver) {
